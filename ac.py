@@ -1,49 +1,67 @@
 #!/usr/bin/python3
 
 from functools import reduce
+from collections import deque
 
 class AC:
     """Class for Aho-Corasick module"""
     def __init__(self, p):
-        # k : number of patterns
-        self.k = len(p)
         # p : list of pattern strings with total length m
         self.p = list(p)
-        self.m = sum(len(x) for x in p)
-        # alphabet : unique alphabets in p
-        self.alphabet = list(reduce(lambda x, y : x | y, [set(x) for x in p]))
+        self.m = sum(len(x) for x in p)+1
         # tree : just for bookkeeping. (depth = length of prefix-suffix)
         # ff : state#, char -> state# for some pattern that is the suffix of current state#
         # of : state# -> matched patterns' numbers
-        self,tree, self.ff, self.of = self.construct()
+        self.tree, self.ff, self.of = self.construct()
 
     def construct(self):
-        p = self.p
-        max_d = max(len(x) for x in p)
+        tree = [[-1 for j in range(26)] for i in range(self.m)]
+        ff = [0 for i in range(self.m)]
+        of = [set() for i in range(self.m)]
+        # tree construction
+        #  implemented in array
+        new_state = 1
+        curr_state = 0
+        for pi in self.p:
+            curr_state = 0
+            for c in pi:
+                next_state = tree[curr_state][ord(c)-ord('a')]
+                if next_state == -1:
+                    tree[curr_state][ord(c)-ord('a')] = new_state 
+                    next_state = new_state
+                    new_state = new_state + 1
+                curr_state = next_state
+            of[curr_state] = set([pi])
 
-        p = self.p
-        m = len(p)
-        ff = [0 for i in range(0, m)]
-        # k : guessed length of prefix-suffix except p[q]
-        k = 0
-        # recursive structure for ff
-        ## case 1 : p[k] == p[q]
-        ##  ff[q] = k + 1
-        ## case 2 : p[k] != p[q]
-        ##  fallback with k = ff[k-1]
-        ## starts with ff[q-1], ends with k == 0
-        #  p[0..q]
-        for q in range(1, m):
-            # fall back until p[k] == p[q].
-            # or k == 0.
-            while k > 0 and p[k] != p[q]:
-                k = ff[k-1]
-            # p[k] == p[q], thus next k = k+1.
-            # or k == 0.
-            if k > 0 or p[k] == p[q]:
-                k = k + 1
-            ff[q] = k
-        return ff
+        # failure function construction
+        #  recursive on depth of tree
+        ## base case : depth(s) <= 1. ff[s] = 0
+        ## inductive case : ff[s] = ff[r]
+        ##                  for some r s.t. r'-c->r, s'-c->s, ff*[s'] = r'
+        ## BFS
+        ## queue of depth * curr_state * char *prev_state
+        que = deque([(0, 0, 0, 0)])
+        while len(que) > 0:
+            depth, curr, char, prev = que.popleft()
+            # BFS explore
+            for c in range(26):
+                succ = tree[curr][c]
+                if succ != -1:
+                    que.append((depth+1, succ, c, curr))
+            # inductive case
+            if depth > 1:
+                # rr is r' : state#.
+                rr = ff[prev]
+                # fall back until r'-c->r, s'-c->s, ff*[s'] = r'
+                # or r' == 0.
+                while rr > 0 and tree[rr][char] == -1:
+                    rr = ff[rr]
+                r = tree[rr][char]
+                if r == -1:
+                    r = 0
+                ff[curr] = r
+                of[curr] = of[curr] | of[r]
+        return (tree, ff, of)
 
     def search(self, t):
         p = self.p
