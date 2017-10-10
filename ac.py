@@ -64,24 +64,25 @@ class AC:
         return (tree, ff, of)
 
     def search(self, t):
-        p = self.p
+        tree = self.tree
         ff = self.ff
+        of = self.of
         n = len(t)
-        m = len(p)
-        # q : length of match
-        q = 0
-        for i in range(0, n):
-            # fall back until p[q] == t[i].
-            # or q == 0.
-            while q > 0 and p[q] != t[i]:
-                q = ff[q-1]
-            # p[q] == t[i], thus next q = q+1.
-            # or q == 0.
-            if q > 0 or p[q] == t[i]:
-                q = q + 1
-            if q == m:
-                yield (i-m+1, [])
-                q = ff[q-1]
+        # s : current state#
+        s = 0
+        i = 0
+        while i < n:
+            ss = tree[s][ord(t[i])-ord('a')]
+            if ss != -1:
+                s = ss
+                if len(of[s]) != 0:
+                    yield i, of[s]
+                i = i + 1
+            else:
+                if s == 0:
+                    i = i + 1
+                else:
+                    s = ff[s]
 
     def printAll(self, t):
         for i in self.search(t):
