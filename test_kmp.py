@@ -6,8 +6,8 @@ class TestKMP(unittest.TestCase):
     k2 = kmp.KMP("aabbaab")
 
     def test_p(self):
-        self.assertEqual(self.k1.p, "ababaca")
-        self.assertEqual(self.k2.p, "aabbaab")
+        self.assertEqual(''.join(self.k1.p), "ababaca")
+        self.assertEqual(''.join(self.k2.p), "aabbaab")
 
     def test_ff_construction(self):
         self.assertEqual(self.k1.ff, [0,0,1,2,3,0,1])

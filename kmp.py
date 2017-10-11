@@ -4,14 +4,15 @@ class KMP:
     """Class for KMP algorithm"""
     def __init__(self, p):
         # p : string with length m
-        self.p = p
+        self.p = list(p)
+        self.m = len(p)
         # ff : p[0..i] -> length of prefix-suffix
         self.ff = self.construct()
 
     def construct(self):
         p = self.p
-        m = len(p)
-        ff = [0 for i in range(0, m)]
+        m = self.m
+        ff = [0 for i in range(m)]
         # k : guessed length of prefix-suffix except p[q]
         k = 0
         # recursive structure for ff
@@ -36,11 +37,11 @@ class KMP:
     def search(self, t):
         p = self.p
         ff = self.ff
+        m = self.m
         n = len(t)
-        m = len(p)
         # q : length of match
         q = 0
-        for i in range(0, n):
+        for i in range(n):
             # fall back until p[q] == t[i].
             # or q == 0.
             while q > 0 and p[q] != t[i]:
