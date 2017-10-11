@@ -4,7 +4,7 @@ from functools import reduce
 from collections import deque
 
 class AC:
-    """Class for Aho-Corasick module"""
+    """Class for Aho-Corasick algorithm"""
     def __init__(self, p):
         # p : list of pattern strings with total length m
         self.p = list(p)

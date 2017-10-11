@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 class KMP:
-    """Class for KMP module"""
+    """Class for KMP algorithm"""
     def __init__(self, p):
         # p : string with length m
         self.p = p
