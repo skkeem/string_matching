@@ -54,6 +54,33 @@ class KMP:
                 yield i-m+1
                 q = ff[q-1]
 
+    def stream(self):
+        p = self.p
+        ff = self.ff
+        m = self.m
+
+        # q : length of match
+        q = 0
+        # ret : yield value
+        ret = None
+        while True:
+            # c : next input
+            c = yield ret
+            # fall back until p[q] == c.
+            # or q == 0.
+            while q > 0 and p[q] != c:
+                q = ff[q-1]
+            # p[q] == c, thus next q = q+1.
+            # or q == 0.
+            if q > 0 or p[q] == c:
+                q = q + 1
+
+            if q == m:
+                ret = True
+                q = ff[q-1]
+            else:
+                ret = False
+
     def printAll(self, t):
         for i in self.search(t):
             print(i)
