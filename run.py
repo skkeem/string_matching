@@ -24,8 +24,6 @@ def main(buf):
         output.write("{} {}\n".format(i, j))
 
     ret = output.getvalue()
-
-    buf.close()
     output.close()
     return ret
     
@@ -46,6 +44,7 @@ if __name__ == "__main__":
         f.close()
 
     output = main(buf)
+    buf.close()
 
     # write output files
     try:
