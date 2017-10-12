@@ -12,8 +12,10 @@ class BB:
         # dr : pi[1..m] -> distinct row number.
         # pp : p converted in to sequence of distinct row #s.
         self.dr, self.pp = self.construct()
-        # ac : Aho-Corasick instance for p
+        # ac : Aho-Corasick instance for p (row-matching)
         self.ac = AC(self.dr.keys())
+        # kmp : KMP instance for pp (column-matching)
+        self.kmp = KMP(self.pp)
         # R : distinct row #[1..n, 1..n] for match.
         # !!this is constructed row by row to reduce space usage.
 
@@ -33,8 +35,8 @@ class BB:
         assert (self.m <= n)
 
         ac = self.ac
+        kmp = self.kmp
         dr = self.dr
-        kmp = KMP(self.pp)
         nkmp = [kmp.stream() for i in range(n)]
         for k in nkmp:
             next(k)
